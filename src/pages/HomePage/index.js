@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useQuery, gql, useMutation } from "@apollo/client";
+import { useQuery, gql } from "@apollo/client";
 import { LOAD_TODOS_WITH_USER } from "../../graphQL/queries";
-import { CREATE_TODO } from "../../graphQL/mutations";
+
+import Container from "@mui/material/Container";
+import CreateTodoForm from "../../components/CreateTodoForm/CreateTodoForm";
+import Header from "../../components/Header/Header";
 
 function HomePage() {
   const { error: todosError, loading, data } = useQuery(LOAD_TODOS_WITH_USER);
-  const [createTodo, { error: createError }] = useMutation(CREATE_TODO);
+
   const [todos, setTodos] = useState([]);
 
   useEffect(() => {
@@ -15,23 +18,10 @@ function HomePage() {
 
   return (
     <>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          console.log(e.target.title.value, e.target.complete.value);
-          createTodo({
-            variables: {
-              title: e.target.title.value,
-              completed: false,
-            },
-          }).then((x)=>{console.log(x);});
-          if (createError) console.log(createError);
-        }}
-      >
-        <input type="text" name="title" placeholder="Title"></input>
-        <input type="text" placeholder="Complete" name="complete"></input>
-        <button type="submit">add</button>
-      </form>
+      <Header />
+      <Container>
+        <CreateTodoForm />
+      </Container>
       {todos.length !== 0 ? (
         <>
           {todos.map((todo, index) => {

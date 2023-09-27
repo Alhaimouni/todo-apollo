@@ -30,14 +30,12 @@ export const LOAD_TODOS_WITH_USER = gql`
   }
 `;
 
-export function LOAD_TODO(id) {
-  return gql`
-  query {
-    todo(id: ${id}) {
+export const GET_TODO_QUERY = gql`
+  query GetTodo($id: ID!) {
+    todo(id: $id) {
       id
       title
       completed
     }
   }
 `;
-}
