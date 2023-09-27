@@ -1,9 +1,8 @@
-import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 
-const Header = () => {
+function Header() {
   return (
     <AppBar position="static">
       <Toolbar>
@@ -13,6 +12,6 @@ const Header = () => {
       </Toolbar>
     </AppBar>
   );
-};
+}
 
 export default Header;
