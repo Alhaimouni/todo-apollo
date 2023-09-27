@@ -35,7 +35,20 @@ function CreateTodoForm() {
   };
 
   return (
-    <form onSubmit={submitTodo}>
+    <form
+      onSubmit={submitTodo}
+      style={{
+        maxWidth: "600px",
+        margin: "0px auto",
+        border: "2px solid grey",
+        borderRadius: "6px",
+        padding: "15px 75px",
+        boxShadow: "1px 1px 7px grey",
+      }}
+    >
+      <h4 style={{ marginBottom: "5px" }}>
+        Add Todo by filling the title and completion status:
+      </h4>
       <TextField
         name="title"
         label="Title"
@@ -52,6 +65,7 @@ function CreateTodoForm() {
       />
 
       <FormControlLabel
+        style={{ margin: "5px 0px 5px 0px" }}
         control={
           <Checkbox
             name="completed"
@@ -63,8 +77,8 @@ function CreateTodoForm() {
         label="Completed"
       />
 
-      <Button type="submit" variant="outlined" color="primary" fullWidth>
-        + Add
+      <Button type="submit" variant="contained" color="primary" fullWidth>
+        Add
       </Button>
     </form>
   );

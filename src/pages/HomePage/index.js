@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useQuery, gql } from "@apollo/client";
-import { LOAD_TODOS_WITH_USER } from "../../graphQL/queries";
-
+import { LOAD_TODOS } from "../../graphQL/queries";
 import Container from "@mui/material/Container";
 import CreateTodoForm from "../../components/CreateTodoForm/CreateTodoForm";
 import Header from "../../components/Header/Header";
+import TodosList from "../../components/TodosList/TodosList";
+import { Paper } from "@mui/material";
 
 function HomePage() {
-  const { error: todosError, loading, data } = useQuery(LOAD_TODOS_WITH_USER);
+  const { error: todosError, loading, data } = useQuery(LOAD_TODOS);
 
   const [todos, setTodos] = useState([]);
 
@@ -19,23 +20,19 @@ function HomePage() {
   return (
     <>
       <Header />
-      <Container>
-        <CreateTodoForm />
-      </Container>
-      {todos.length !== 0 ? (
-        <>
-          {todos.map((todo, index) => {
-            return (
-              <div key={index}>
-                <p>{todo.title}</p>
-                <p>{+todo.completed}</p>
-              </div>
-            );
-          })}
-        </>
-      ) : (
-        <p>Loading Data</p>
-      )}
+      <Paper
+        style={{
+          minHeight: "calc(100vh - (63.992px + 52px) )",
+          padding: "26px",
+          background:
+            "linear-gradient(45deg, rgba(67,147,224,1) 6%, rgba(255,255,254,1) 6%, rgba(0,212,255,0.13209033613445376) 100%)",
+        }}
+      >
+        <Container>
+          <CreateTodoForm />
+          <TodosList todos={todos} />
+        </Container>
+      </Paper>
     </>
   );
 }
