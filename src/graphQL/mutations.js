@@ -31,9 +31,10 @@ export const UPDATE_TODO_STATUS = gql`
 
 export const UPDATE_TODO_TITLE = gql`
   mutation updateTodo($id: ID!, $title: String!, $completed: Boolean!) {
-    updateTodo(id: $id, input: { title: $title, completed: $completed }) {
+    updateTodo(id: $id, input: { title: $title}) {
       id
       title
+      completed
     }
   }
 `;

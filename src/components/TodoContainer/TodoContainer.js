@@ -15,7 +15,7 @@ function TodoContainer({ loading, todosError }) {
         <TodosList />
       </When>
       <When condition={!loading && todos.length == 0}>
-        <h1>No items </h1>
+        <h1>No items</h1>
       </When>
     </>
   );

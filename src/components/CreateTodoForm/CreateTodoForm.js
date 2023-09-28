@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
@@ -6,17 +6,17 @@ import Button from "@mui/material/Button";
 import { CREATE_TODO } from "../../graphQL/mutations";
 import { useMutation } from "@apollo/client";
 import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
+import { CreateTodoForm_mui as style } from "../../materialUI";
+import { Typography } from "@mui/material";
+import { Alert } from "../Alert/Alert";
+import { AlertContext } from "../../contextAPI/aletContext";
 
 function CreateTodoForm() {
   const [createTodo, { error: createError }] = useMutation(CREATE_TODO);
   const [completed, setCompleted] = useState(false);
   const [isEmptyTitle, setIsEmptyTitle] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [snackbarData, setsnackbarData] = useState({
-    msg: "",
-    status: "",
-  });
+  const { open, handleClose, snackbarData, setOpen, setsnackbarData } =
+    useContext(AlertContext);
 
   function submitTodo(event) {
     event.preventDefault();
@@ -51,21 +51,13 @@ function CreateTodoForm() {
     if (createError) console.log(createError);
   }
 
-  const handleCheckboxChange = (event) => {
+  function handleCheckboxChange(event) {
     setCompleted(event.target.checked);
-  };
-
-  const handleClose = (event, reason) => {
-    setOpen(false);
-  };
-
-  const Alert = React.forwardRef(function Alert(props, ref) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-  });
+  }
 
   return (
     <>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
         <Alert
           onClose={handleClose}
           severity={snackbarData.status}
@@ -74,21 +66,10 @@ function CreateTodoForm() {
           {snackbarData.msg}
         </Alert>
       </Snackbar>
-      <form
-        onSubmit={submitTodo}
-        style={{
-          width: "35%",
-          margin: "0px auto",
-          border: "1px solid rgb(94,190,224)",
-          borderRadius: "6px",
-          padding: "15px 65px",
-          boxShadow: "1px 1px 2px rgb(94,190,224)",
-          backgroundColor: "white",
-        }}
-      >
-        <h4 style={{ marginBottom: "5px" }}>
-          Add Todo by filling the title and completion status:
-        </h4>
+      <form onSubmit={submitTodo} style={style.form}>
+        <Typography>
+          Add a by filling the title and completion status:
+        </Typography>
         <TextField
           name="title"
           label="Title"
@@ -103,9 +84,8 @@ function CreateTodoForm() {
             )
           }
         />
-
         <FormControlLabel
-          style={{ margin: "5px 0px 5px 0px" }}
+          xs={style.control}
           control={
             <Checkbox
               name="completed"
@@ -116,7 +96,6 @@ function CreateTodoForm() {
           }
           label="Completed"
         />
-
         <Button type="submit" variant="contained" color="primary" fullWidth>
           Add
         </Button>

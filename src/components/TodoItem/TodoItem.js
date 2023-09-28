@@ -1,15 +1,22 @@
 import React, { useState, useContext } from "react";
+import {
+  DELETE_TODO,
+  UPDATE_TODO_STATUS,
+  UPDATE_TODO_TITLE,
+} from "../../graphQL/mutations";
 import { Paper, Checkbox, Typography, IconButton } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
-import { DELETE_TODO, UPDATE_TODO_STATUS } from "../../graphQL/mutations";
 import { useMutation } from "@apollo/client";
 import { TodoContext } from "../../contextAPI/todoContext";
+import { TodoItem_mui as style } from "../../materialUI";
+import { AlertContext } from "../../contextAPI/aletContext";
 
 function TodoItem({ title, completed, id }) {
   const { deleteTodoById } = useContext(TodoContext);
-  const [updateTodoState, { error: updateStateError }] =useMutation(UPDATE_TODO_STATUS);
-  const [updateTodoTitle, { error: updateTitleError }] =useMutation(UPDATE_TODO_STATUS);
-  const [deleteTodo, { error: deleteError }] = useMutation(DELETE_TODO);
+  const { setOpen, setsnackbarData } = useContext(AlertContext);
+  const [updateState] = useMutation(UPDATE_TODO_STATUS);
+  const [updateTitle] = useMutation(UPDATE_TODO_TITLE);
+  const [deleteTodo] = useMutation(DELETE_TODO);
   const [isEditing, setIsEditing] = useState(false);
   const [todoData, setTodoData] = useState({
     title,
@@ -21,51 +28,72 @@ function TodoItem({ title, completed, id }) {
     setIsEditing(!isEditing);
   }
 
-  async function handleEditStatus() {
-    //Switch todo status from graphQL API
-
-    // let todoItem = await updateTodoState({
-    //   variables: {
-    //     id,
-    //     completed: !completed,
-    //   },
-    // });
-    // console.log(todoItem);
-
-    //Switch todo status from Local State
-    setTodoData({
-      ...todoData,
-      id,
-      // completed: todoItem.data.updateTodo.completed,
-      completed: !todoData.completed,
-    });
+  function handleEditStatus() {
+    updateState({
+      variables: {
+        id,
+        completed: !completed,
+      },
+    })
+      .then((resolve) => {
+        setTodoData({
+          ...todoData,
+          id,
+          completed: !todoData.completed,
+        });
+        setsnackbarData({
+          msg: `Item complete state updated successfuly to ${!todoData.completed} `,
+          status: "success",
+        });
+        setOpen(true);
+      })
+      .catch((reject) => {
+        setsnackbarData({
+          msg: `Somthing wrong with item update`,
+          status: "error",
+        });
+        setOpen(true);
+      });
   }
 
-  async function handleDelete() {
-    //Delete todo from graphQL API
-    await deleteTodo({
+  function handleDelete() {
+    deleteTodo({
       variables: {
         id: id,
       },
-    });
-    console.log("item with id " + id + " deleted");
-    //Delete todo from Local State
-    deleteTodoById(id);
+    })
+      .then(() => {
+        setsnackbarData({
+          msg: "Item deleted successfuly",
+          status: "success",
+        });
+        deleteTodoById(id);
+        setOpen(true);
+      })
+      .catch(() => {
+        setsnackbarData({
+          msg: "Error while deleting item",
+          status: "error",
+        });
+        setOpen(true);
+      });
   }
 
-  function titleEdit() {}
+  function titleEdit(event) {
+    setTodoData({ ...todoData, title: event.target.value });
+    setsnackbarData({
+      msg: `Item Title updated successfuly `,
+      status: "success",
+    });
+    setOpen(true);
+  }
 
   return (
     <Paper
       elevation={1}
-      style={{
-        padding: "15px",
-        display: "flex",
-        alignItems: "center",
+      sx={{
+        ...style,
         borderLeft: `4px solid ${todoData.completed ? "green" : "red"}`,
-      }}
-      onClick={() => {
-        console.log(id);
       }}
     >
       <Checkbox
@@ -78,8 +106,8 @@ function TodoItem({ title, completed, id }) {
         {isEditing ? (
           <input
             type="text"
-            value={todoData.title}
-            onChange={(e) => todoData.title}
+            defaultValue={todoData.title}
+            onChange={titleEdit}
           />
         ) : (
           title
