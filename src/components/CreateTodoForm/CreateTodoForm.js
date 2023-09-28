@@ -77,12 +77,13 @@ function CreateTodoForm() {
       <form
         onSubmit={submitTodo}
         style={{
-          maxWidth: "600px",
+          width: "35%",
           margin: "0px auto",
-          border: "2px solid grey",
+          border: "1px solid rgb(94,190,224)",
           borderRadius: "6px",
-          padding: "15px 75px",
-          boxShadow: "1px 1px 7px grey",
+          padding: "15px 65px",
+          boxShadow: "1px 1px 2px rgb(94,190,224)",
+          backgroundColor: "white",
         }}
       >
         <h4 style={{ marginBottom: "5px" }}>

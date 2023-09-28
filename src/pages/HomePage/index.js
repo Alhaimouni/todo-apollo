@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { LOAD_TODOS } from "../../graphQL/queries";
 import CreateTodoForm from "../../components/CreateTodoForm/CreateTodoForm";
@@ -7,11 +7,12 @@ import { Paper } from "@mui/material";
 import Box from "@mui/material/Box";
 import TodoContainer from "../../components/TodoContainer/TodoContainer";
 import Footer from "../../components/Footer/Footer";
+import { TodoContext } from "../../contextAPI/todoContext";
+import wp from "../../assets/wp.avif";
 
 function HomePage() {
   const { error: todosError, loading, data } = useQuery(LOAD_TODOS);
-  const [todos, setTodos] = useState([]);
-
+  const { setTodos } = useContext(TodoContext);
   useEffect(() => {
     if (!loading) setTodos(data.todos.data);
     if (todosError) console.log(todosError);
@@ -24,8 +25,8 @@ function HomePage() {
         sx={{
           minHeight: "calc(100vh - (63.992px + 52px))",
           padding: "26px",
-          background:
-            "linear-gradient(45deg, rgba(67, 147, 224, 1) 6%, rgba(255, 255, 254, 1) 6%, rgba(0, 212, 255, 0.13209033613445376) 100%)",
+          backgroundImage: `url(${wp})`,
+
         }}
       >
         <Box
@@ -38,11 +39,7 @@ function HomePage() {
           }}
         >
           <CreateTodoForm />
-          <TodoContainer
-            loading={loading}
-            todos={todos}
-            todosError={todosError}
-          />
+          <TodoContainer loading={loading} todosError={todosError} />
         </Box>
       </Paper>
       <Footer />
