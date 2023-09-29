@@ -1,28 +1,25 @@
 import React, { useState, useContext } from "react";
-import {
-  DELETE_TODO,
-  UPDATE_TODO_STATUS,
-  UPDATE_TODO_TITLE,
-} from "../../graphQL/mutations";
+import { DELETE_TODO,UPDATE_TODO_STATUS,UPDATE_TODO_TITLE } from "../../graphQL/mutations";
 import { Paper, Checkbox, Typography, IconButton } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import { useMutation } from "@apollo/client";
 import { TodoContext } from "../../contextAPI/todoContext";
 import { TodoItem_mui as style } from "../../materialUI";
 import { AlertContext } from "../../contextAPI/aletContext";
+import { Input } from "@mui/material";
+import { When } from "react-if";
+
 
 function TodoItem({ title, completed, id }) {
+
   const { deleteTodoById } = useContext(TodoContext);
-  const { setOpen, setsnackbarData } = useContext(AlertContext);
+  const { afterFinishAlert } = useContext(AlertContext);
   const [updateState] = useMutation(UPDATE_TODO_STATUS);
   const [updateTitle] = useMutation(UPDATE_TODO_TITLE);
   const [deleteTodo] = useMutation(DELETE_TODO);
   const [isEditing, setIsEditing] = useState(false);
-  const [todoData, setTodoData] = useState({
-    title,
-    completed,
-    id,
-  });
+  const [editingTitle, setEditingTitle] = useState("");
+  const [todoData, setTodoData] = useState({title,completed,id});
 
   function toggleEdit() {
     setIsEditing(!isEditing);
@@ -36,56 +33,45 @@ function TodoItem({ title, completed, id }) {
       },
     })
       .then((resolve) => {
+        console.log(resolve);
         setTodoData({
           ...todoData,
           id,
           completed: !todoData.completed,
         });
-        setsnackbarData({
-          msg: `Item complete state updated successfuly to ${!todoData.completed} `,
-          status: "success",
-        });
-        setOpen(true);
+        afterFinishAlert(`Item complete state updated successfuly to ${!todoData.completed} `,`success`)
       })
       .catch((reject) => {
-        setsnackbarData({
-          msg: `Somthing wrong with item update`,
-          status: "error",
-        });
-        setOpen(true);
+        console.log(reject);
+        afterFinishAlert(`Somthing wrong with item update`,`error`)
       });
   }
 
   function handleDelete() {
     deleteTodo({
-      variables: {
-        id: id,
-      },
+      variables: {id},
     })
-      .then(() => {
-        setsnackbarData({
-          msg: "Item deleted successfuly",
-          status: "success",
-        });
+      .then((resolve) => {
+        console.log(resolve);
+        afterFinishAlert(`Item deleted successfuly`,`success`);
         deleteTodoById(id);
-        setOpen(true);
       })
       .catch(() => {
-        setsnackbarData({
-          msg: "Error while deleting item",
-          status: "error",
-        });
-        setOpen(true);
+        afterFinishAlert(`Error while deleting item`,`error`);
       });
   }
 
-  function titleEdit(event) {
-    setTodoData({ ...todoData, title: event.target.value });
-    setsnackbarData({
-      msg: `Item Title updated successfuly `,
-      status: "success",
-    });
-    setOpen(true);
+  function handleTitleEdit() {
+    updateTitle({variables:{
+      id,
+      title:editingTitle
+    }}).then(resolve=>{
+      console.log(resolve);
+      setIsEditing(false);
+      afterFinishAlert(`Item title updated successfuly`,`success`);
+    }).catch(reject=>{
+      afterFinishAlert(`Error while updating item title`,`error`);
+    })
   }
 
   return (
@@ -96,26 +82,21 @@ function TodoItem({ title, completed, id }) {
         borderLeft: `4px solid ${todoData.completed ? "green" : "red"}`,
       }}
     >
-      <Checkbox
-        color="primary"
-        checked={todoData.completed}
-        onChange={handleEditStatus}
-        disabled={isEditing}
-      />
+      <Checkbox color="primary" checked={todoData.completed} onChange={handleEditStatus}disabled={isEditing}/>
       <Typography variant="h6" flex={1}>
-        {isEditing ? (
-          <input
-            type="text"
-            defaultValue={todoData.title}
-            onChange={titleEdit}
-          />
-        ) : (
-          title
-        )}
+          <When condition={isEditing}>
+            <Input defaultValue={todoData.title} onChange={(e)=>{setEditingTitle(e.target.value)}} placeholder="Enter updated text"></Input>
+            <Edit color="primary" onClick={handleTitleEdit} />
+          </When>
+          <When condition={!isEditing}>
+            {title}
+          </When>
       </Typography>
-      <IconButton onClick={toggleEdit}>
-        <Edit color="primary" />
-      </IconButton>
+      <When condition={!isEditing}>
+        <IconButton onClick={toggleEdit}>
+          <Edit color="primary" />
+        </IconButton>
+      </When>
       <IconButton onClick={handleDelete}>
         <Delete style={{ color: "rgb(205,51,0)" }} />
       </IconButton>

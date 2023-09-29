@@ -13,9 +13,17 @@ export default function AlertProvider({ children }) {
     setOpen(false);
   }
 
+  function afterFinishAlert(msg, status) {
+    setsnackbarData({
+      msg,
+      status
+    });
+    setOpen(true);
+  }
+
   return (
     <AlertContext.Provider
-      value={{ open, setOpen, snackbarData, setsnackbarData, handleClose }}
+      value={{ open, setOpen, snackbarData, setsnackbarData, handleClose ,afterFinishAlert }}
     >
       {children}
     </AlertContext.Provider>
