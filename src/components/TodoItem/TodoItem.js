@@ -8,15 +8,15 @@ import { TodoItem_mui as style } from "../../materialUI";
 import { AlertContext } from "../../contextAPI/aletContext";
 import { Input } from "@mui/material";
 import { When } from "react-if";
-
+import Button from '@mui/material/Button';
 
 function TodoItem({ title, completed, id }) {
 
-  const { deleteTodoById } = useContext(TodoContext);
-  const { afterFinishAlert } = useContext(AlertContext);
   const [updateState] = useMutation(UPDATE_TODO_STATUS);
   const [updateTitle] = useMutation(UPDATE_TODO_TITLE);
   const [deleteTodo] = useMutation(DELETE_TODO);
+  const { deleteTodoById } = useContext(TodoContext);
+  const { afterFinishAlert } = useContext(AlertContext);
   const [isEditing, setIsEditing] = useState(false);
   const [editingTitle, setEditingTitle] = useState("");
   const [todoData, setTodoData] = useState({title,completed,id});
@@ -74,6 +74,10 @@ function TodoItem({ title, completed, id }) {
     })
   }
 
+  function updatedText(e){
+    setEditingTitle(e.target.value)
+  }
+  
   return (
     <Paper
       elevation={1}
@@ -85,8 +89,9 @@ function TodoItem({ title, completed, id }) {
       <Checkbox color="primary" checked={todoData.completed} onChange={handleEditStatus}disabled={isEditing}/>
       <Typography variant="h6" flex={1}>
           <When condition={isEditing}>
-            <Input defaultValue={todoData.title} onChange={(e)=>{setEditingTitle(e.target.value)}} placeholder="Enter updated text"></Input>
-            <Edit color="primary" onClick={handleTitleEdit} />
+            <Input defaultValue={todoData.title} onChange={updatedText} placeholder="Enter updated text"></Input>
+            <Button variant="outlined" color="primary"  onClick={handleTitleEdit} style={{marginLeft:'10px'}}>Edit</Button>
+            <Button variant="outlined" color="primary"  onClick={toggleEdit} style={{marginLeft:'10px'}}>Undo</Button>
           </When>
           <When condition={!isEditing}>
             {title}

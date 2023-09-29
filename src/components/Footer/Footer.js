@@ -7,9 +7,9 @@ function Footer() {
       style={{
         height: "50px",
         textAlign: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.497)",
+        backgroundColor: "rgb(25,118,210)",
         boxShadow: "none",
-        color: "black",
+        color: "white",
       }}
     >
       <p>All rights Reserved 2023</p>
