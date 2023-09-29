@@ -11,7 +11,6 @@ import { When } from "react-if";
 import Button from '@mui/material/Button';
 
 function TodoItem({ title, completed, id }) {
-
   const [updateState] = useMutation(UPDATE_TODO_STATUS);
   const [updateTitle] = useMutation(UPDATE_TODO_TITLE);
   const [deleteTodo] = useMutation(DELETE_TODO);
